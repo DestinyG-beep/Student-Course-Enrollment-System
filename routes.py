@@ -15,3 +15,10 @@ def create_student():
     db.session.commit()
     
     return jsonify({'message': 'Student created successfully', 'student': {'id': new_student.id, 'name': new_student.name, 'email': new_student.email}}), 201
+
+# 🟢 Get all Students
+@student_bp.route('/', methods=['GET'])
+def get_students():
+    students = Student.query.all()
+    students_data = [{'id': student.id, 'name': student.name, 'email': student.email} for student in students]
+    return jsonify({'students': students_data}), 200
