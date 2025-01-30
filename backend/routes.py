@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from backend.flask import Blueprint, request, jsonify
 from backend.models import db, Student, Course, Enrollment
 
 student_bp = Blueprint('students', __name__, url_prefix='/students')

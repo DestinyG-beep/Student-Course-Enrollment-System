@@ -4,6 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+Flask = "*"
+Flask-SQLAlchemy = "*"
+Flask-CORS = "*"
+Flask-Migrate = "*"
 
 [dev-packages]
 

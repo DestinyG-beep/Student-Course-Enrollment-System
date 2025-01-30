@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import './App.css';
+import CourseCard from './CourseCard.jsx';
+import SearchFilter from './SearchFilter.jsx';
+
+const sampleCourses = [
+  { id: 1, name: 'Math 101', department: 'Mathematics', credits: 3, availableSeats: 10 },
+  { id: 2, name: 'History 201', department: 'History', credits: 4, availableSeats: 5 },
+  { id: 3, name: 'Computer Science 101', department: 'Computer Science', credits: 3, availableSeats: 15 },
+  // Add more courses as needed
+];
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState({ department: '', credits: '' });
+
+  const filteredCourses = sampleCourses.filter((course) => {
+    const matchesSearch =
+      course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.department.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilters =
+      (filters.department ? course.department === filters.department : true) &&
+      (filters.credits ? course.credits === Number(filters.credits) : true);
+
+    return matchesSearch && matchesFilters;
+  });
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="App">
+      <h1>Course Catalog</h1>
+      <SearchFilter
+        filters={filters}
+        setFilters={setFilters}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
+      <div className="course-list">
+        {filteredCourses.map((course) => (
+          <CourseCard key={course.id} course={course} />
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
