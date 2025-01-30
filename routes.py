@@ -60,3 +60,20 @@ def delete_student(id):
     db.session.commit()
 
     return jsonify({'message': 'Student deleted successfully'}), 200
+
+# 🟢 Enroll a Student in a Course
+@student_bp.route('/<int:student_id>/enroll/<int:course_id>', methods=['POST'])
+def enroll_student(student_id, course_id):
+    student = Student.query.get(student_id)
+    if not student:
+        return jsonify({'error': 'Student not found'}), 404
+
+    course = Course.query.get(course_id)
+    if not course:
+        return jsonify({'error': 'Course not found'}), 404
+
+    enrollment = Enrollment(student_id=student_id, course_id=course_id)
+    db.session.add(enrollment)
+    db.session.commit()
+
+    return jsonify({'message': 'Student enrolled in course successfully', 'enrollment': {'student_id': enrollment.student_id, 'course_id': enrollment.course_id}}), 201
