@@ -90,3 +90,23 @@ def get_student_courses(student_id):
     courses_data = [{'id': course.id, 'name': course.name, 'description': course.description} for course in courses]
 
     return jsonify({'courses': courses_data}), 200
+
+course_bp = Blueprint('courses', __name__, url_prefix='/courses')
+
+# 🔵 Get All Courses
+@course_bp.route('/', methods=['GET'])
+def get_courses():
+    courses = Course.query.all()
+    courses_data = [{'id': course.id, 'name': course.name, 'description': course.description} for course in courses]
+    return jsonify({'courses': courses_data}), 200
+
+# 🔵 Get a Course by ID
+@course_bp.route('/<int:id>', methods=['GET'])
+def get_course(id):
+    course = Course.query.get(id)
+    if not course:
+        return jsonify({'error': 'Course not found'}), 404
+
+    return jsonify({'course': {'id': course.id, 'name': course.name, 'description': course.description}}), 200
+
+    
