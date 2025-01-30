@@ -77,3 +77,16 @@ def enroll_student(student_id, course_id):
     db.session.commit()
 
     return jsonify({'message': 'Student enrolled in course successfully', 'enrollment': {'student_id': enrollment.student_id, 'course_id': enrollment.course_id}}), 201
+
+# 🟢 Get all Courses a Student is Enrolled in
+@student_bp.route('/<int:student_id>/courses', methods=['GET'])
+def get_student_courses(student_id):
+    student = Student.query.get(student_id)
+    if not student:
+        return jsonify({'error': 'Student not found'}), 404
+
+    enrollments = Enrollment.query.filter_by(student_id=student_id).all()
+    courses = [Course.query.get(enrollment.course_id) for enrollment in enrollments]
+    courses_data = [{'id': course.id, 'name': course.name, 'description': course.description} for course in courses]
+
+    return jsonify({'courses': courses_data}), 200
