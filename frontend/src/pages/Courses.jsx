@@ -1,27 +1,24 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import React from "react";
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:5555/courses')
-      .then(response => setCourses(response.data))
-      .catch(error => console.error('Error fetching courses:', error));
+    fetch("/api/courses")
+      .then((res) => res.json())
+      .then((data) => setCourses(data))
+      .catch((err) => console.error("Error fetching courses:", err));
   }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Available Courses</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {courses.map(course => (
-          <div key={course.id} className="bg-white p-4 shadow-lg rounded-lg">
-            <h2 className="text-xl font-semibold">{course.name}</h2>
-            <p className="text-gray-600">{course.department}</p>
-            <p className="text-sm text-gray-500">{course.credits} credits</p>
-          </div>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Courses</h1>
+      <ul>
+        {courses.map((course) => (
+          <li key={course.id} className="p-2 border-b">{course.name} - {course.credits} Credits</li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 };

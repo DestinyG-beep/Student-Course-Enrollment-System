@@ -2,9 +2,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_migrate import Migrate
-from backend.models import db
-from backend.config import Config
-from backend.routes import student_bp
+from models import db
+from config import Config
+from routes import student_bp
 from flask import jsonify
 
 app = Flask(__name__)
