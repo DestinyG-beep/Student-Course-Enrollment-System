@@ -16,6 +16,42 @@ class Course(db.Model):
     department = db.Column(db.String(100), nullable=False)
     credits = db.Column(db.Integer, nullable=False)
 
+class Enrollment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
+    student_name = db.Column(db.String(100), nullable=False)
+    student_email = db.Column(db.String(100), nullable=False)
+
+@app.route("/api/courses", methods=["GET"])
+def get_courses():
+    courses = Course.query.all()
+    return jsonify([{"id": c.id, "name": c.name, "department": c.department, "credits": c.credits} for c in courses])
+
+@app.route("/api/enrollments", methods=["GET"])
+def get_enrollments():
+    enrollments = Enrollment.query.all()
+    return jsonify([{
+        "id": e.id,
+        "course_id": e.course_id,
+        "student_name": e.student_name,
+        "student_email": e.student_email
+    } for e in enrollments])
+
+@app.route("/api/enrollments", methods=["POST"])
+def create_enrollment():
+    data = request.get_json()
+    # Expecting keys: student_name, student_email, course_id
+    if not data or not data.get("student_name") or not data.get("student_email") or not data.get("course_id"):
+        return jsonify({"error": "Missing data"}), 400
+    enrollment = Enrollment(
+        student_name=data["student_name"],
+        student_email=data["student_email"],
+        course_id=data["course_id"]
+    )
+    db.session.add(enrollment)
+    db.session.commit()
+    return jsonify({"message": "Enrollment created successfully", "id": enrollment.id}), 201
+
 @app.route("/")
 def index():
     return "Welcome to the Student Course Enrollment API!"
