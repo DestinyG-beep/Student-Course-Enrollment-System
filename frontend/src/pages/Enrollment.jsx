@@ -1,30 +1,81 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 
+const Enrollment = () => {
+  const [courses, setCourses] = useState([]);
 
-const Enrollment = ({ enrolledCourses }) => {
+  // Fetch courses to populate a dropdown.
+  useEffect(() => {
+    axios.get("http://localhost:5555/api/courses")
+      .then(response => setCourses(response.data))
+      .catch(error => console.error("Error fetching courses:", error));
+  }, []);
+
+  const initialValues = {
+    student_name: '',
+    student_email: '',
+    course_id: ''
+  };
+
+  const validationSchema = Yup.object({
+    student_name: Yup.string().required("Required"),
+    student_email: Yup.string().email("Invalid email").required("Required"),
+    course_id: Yup.string().required("Please select a course")
+  });
+
+  const onSubmit = (values, { resetForm, setSubmitting }) => {
+    axios.post("http://localhost:5555/api/enrollments", values)
+      .then(response => {
+         alert("Enrollment successful!");
+         resetForm();
+      })
+      .catch(error => {
+         alert("Error enrolling. Please try again.");
+         console.error("Enrollment error:", error);
+      })
+      .finally(() => setSubmitting(false));
+  };
+
   return (
-    <div className="bg-gray-100 py-12 px-4 sm:px-8">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-semibold text-center mb-6">Your Enrolled Courses</h1>
-        {enrolledCourses.length === 0 ? (
-          <div className="text-center text-gray-600">
-            <p>You have not enrolled in any courses yet.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {enrolledCourses.map((course) => (
-              <div
-                key={course.id}
-                className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
-              >
-                <h3 className="text-xl font-semibold mb-3">{course.name}</h3>
-                <p className="text-gray-600 mb-4">{course.description}</p>
-              </div>
-            ))}
-          </div>
+    <div className="p-6">
+      <h1 className="text-3xl font-bold text-blue-600 mb-4">Enroll in a Course</h1>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      >
+        {formik => (
+          <Form className="space-y-4 max-w-md mx-auto">
+            <div>
+              <label htmlFor="student_name" className="block font-medium">Name:</label>
+              <Field name="student_name" type="text" className="mt-1 p-2 border rounded w-full" />
+              <ErrorMessage name="student_name" component="div" className="text-red-500 text-sm" />
+            </div>
+            <div>
+              <label htmlFor="student_email" className="block font-medium">Email:</label>
+              <Field name="student_email" type="email" className="mt-1 p-2 border rounded w-full" />
+              <ErrorMessage name="student_email" component="div" className="text-red-500 text-sm" />
+            </div>
+            <div>
+              <label htmlFor="course_id" className="block font-medium">Course:</label>
+              <Field as="select" name="course_id" className="mt-1 p-2 border rounded w-full">
+                <option value="">Select a course</option>
+                {courses.map(course => (
+                  <option key={course.id} value={course.id}>
+                    {course.name} - {course.department} ({course.credits} credits)
+                  </option>
+                ))}
+              </Field>
+              <ErrorMessage name="course_id" component="div" className="text-red-500 text-sm" />
+            </div>
+            <button type="submit" disabled={formik.isSubmitting} className="bg-blue-600 text-white px-4 py-2 rounded">
+              Enroll
+            </button>
+          </Form>
         )}
-      </div>
+      </Formik>
     </div>
   );
 };
