@@ -1,12 +1,12 @@
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import axios from 'axios';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
 
 const Enrollment = () => {
   const [courses, setCourses] = useState([]);
 
-  // Fetch courses to populate a dropdown.
+  // Fetch courses for the enrollment dropdown
   useEffect(() => {
     axios.get("http://localhost:5555/api/courses")
       .then(response => setCourses(response.data))
@@ -14,9 +14,9 @@ const Enrollment = () => {
   }, []);
 
   const initialValues = {
-    student_name: '',
-    student_email: '',
-    course_id: ''
+    student_name: "",
+    student_email: "",
+    course_id: ""
   };
 
   const validationSchema = Yup.object({
@@ -28,12 +28,12 @@ const Enrollment = () => {
   const onSubmit = (values, { resetForm, setSubmitting }) => {
     axios.post("http://localhost:5555/api/enrollments", values)
       .then(response => {
-         alert("Enrollment successful!");
-         resetForm();
+        alert("Enrollment successful!");
+        resetForm();
       })
       .catch(error => {
-         alert("Error enrolling. Please try again.");
-         console.error("Enrollment error:", error);
+        alert("Error enrolling. Please try again.");
+        console.error("Enrollment error:", error);
       })
       .finally(() => setSubmitting(false));
   };

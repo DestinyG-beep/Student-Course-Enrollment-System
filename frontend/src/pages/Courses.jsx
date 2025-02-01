@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const Courses = () => {
@@ -8,11 +8,11 @@ const Courses = () => {
 
   useEffect(() => {
     axios.get("http://localhost:5555/api/courses")
-      .then(response => {
+      .then((response) => {
         setCourses(response.data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         setError("Failed to load courses");
         setLoading(false);
       });
@@ -25,7 +25,7 @@ const Courses = () => {
       {error && <p className="text-red-500">{error}</p>}
       <ul className="space-y-2">
         {courses.length > 0 ? (
-          courses.map(course => (
+          courses.map((course) => (
             <li key={course.id} className="bg-white p-4 shadow rounded flex justify-between items-center">
               <div>
                 <p className="font-bold">{course.name}</p>
