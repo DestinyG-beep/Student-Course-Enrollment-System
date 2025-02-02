@@ -1,4 +1,3 @@
-// src/pages/Enrollment.jsx
 import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -10,7 +9,7 @@ const Enrollment = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch all courses for the enrollment dropdown.
+  // Fetch all courses for the dropdown.
   useEffect(() => {
     axios.get("http://localhost:5555/api/courses")
       .then((response) => {
@@ -18,52 +17,50 @@ const Enrollment = ({ user }) => {
         setAllCourses(Array.isArray(data) ? data : []);
         setLoading(false);
       })
-      .catch((error) => {
-        console.error("Error fetching courses:", error);
+      .catch((err) => {
+        console.error("Error fetching courses:", err);
         setLoading(false);
       });
   }, []);
 
   // Fetch enrolled courses for the logged-in user.
+  const fetchMyCourses = () => {
+    axios.get(`http://localhost:5555/api/students/${user.id}/courses`)
+      .then((response) => {
+        const data = response.data.courses || [];
+        setMyCourses(Array.isArray(data) ? data : []);
+      })
+      .catch((err) => {
+        console.error("Error fetching my courses:", err);
+      });
+  };
+
   useEffect(() => {
     if (user && user.id) {
-      axios.get(`http://localhost:5555/api/students/${user.id}/courses`)
-        .then((response) => {
-          const data = response.data.courses || [];
-          setMyCourses(Array.isArray(data) ? data : []);
-        })
-        .catch((error) => {
-          console.error("Error fetching my courses:", error);
-        });
+      fetchMyCourses();
     }
   }, [user]);
 
   const initialValues = {
-    student_name: user ? user.name : "",
-    student_email: user ? user.email : "",
     course_id: ""
   };
 
   const validationSchema = Yup.object({
-    student_name: Yup.string().required("Required"),
-    student_email: Yup.string().email("Invalid email").required("Required"),
     course_id: Yup.string().required("Please select a course")
   });
 
   const onSubmit = (values, { resetForm, setSubmitting }) => {
-    axios.post("http://localhost:5555/api/enrollments", values)
+    const enrollmentData = {
+      student_name: user.name,
+      student_email: user.email,
+      course_id: values.course_id,
+      note: ""  // Initially empty; user can update status/comment later if implemented
+    };
+    axios.post("http://localhost:5555/api/enrollments", enrollmentData)
       .then((response) => {
         alert("Enrollment successful!");
         resetForm();
-        // Refresh "My Courses" list after enrollment
-        if (user && user.id) {
-          axios.get(`http://localhost:5555/api/students/${user.id}/courses`)
-            .then((response) => {
-              const data = response.data.courses || [];
-              setMyCourses(Array.isArray(data) ? data : []);
-            })
-            .catch((error) => console.error("Error fetching my courses:", error));
-        }
+        fetchMyCourses();  // Refresh enrolled courses
       })
       .catch((error) => {
         alert("Error enrolling. Please try again.");
@@ -72,22 +69,31 @@ const Enrollment = ({ user }) => {
       .finally(() => setSubmitting(false));
   };
 
+  // For deleting an enrollment (not fully implemented on the backend here, but you could add a DELETE endpoint)
+  const handleDelete = (enrollmentId) => {
+    axios.delete(`http://localhost:5555/api/enrollments/${enrollmentId}`)
+      .then(() => {
+        alert("Enrollment deleted.");
+        fetchMyCourses();
+      })
+      .catch(err => {
+        console.error("Error deleting enrollment:", err);
+      });
+  };
+
+  // For updating course status and adding comments, you would implement a PATCH endpoint on the backend.
+  // This demo does not include that logic.
+
   return (
-    <div className="p-6">
+    <div className="p-6 pt-20">
       <h1 className="text-3xl font-bold text-blue-600 mb-4">Enroll in a Course</h1>
-      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      >
         {formik => (
           <Form className="space-y-4 max-w-md mx-auto">
-            <div>
-              <label htmlFor="student_name" className="block font-medium">Name:</label>
-              <Field name="student_name" type="text" className="mt-1 p-2 border rounded w-full" />
-              <ErrorMessage name="student_name" component="div" className="text-red-500 text-sm" />
-            </div>
-            <div>
-              <label htmlFor="student_email" className="block font-medium">Email:</label>
-              <Field name="student_email" type="email" className="mt-1 p-2 border rounded w-full" />
-              <ErrorMessage name="student_email" component="div" className="text-red-500 text-sm" />
-            </div>
             <div>
               <label htmlFor="course_id" className="block font-medium">Course:</label>
               <Field as="select" name="course_id" className="mt-1 p-2 border rounded w-full">
@@ -95,7 +101,7 @@ const Enrollment = ({ user }) => {
                 {Array.isArray(allCourses) &&
                   allCourses.map(course => (
                     <option key={course.id} value={course.id}>
-                      {course.name} - {course.department} ({course.credits} credits)
+                      {course.name} - {course.department} ({course.credits} credits, {course.seats_available} seats)
                     </option>
                   ))
                 }
@@ -115,10 +121,19 @@ const Enrollment = ({ user }) => {
         {myCourses.length > 0 ? (
           <ul className="space-y-2">
             {myCourses.map(course => (
-              <li key={course.id} className="bg-white p-4 rounded shadow">
-                <p className="font-bold">{course.name}</p>
-                <p>Department: {course.department}</p>
-                <p>Credits: {course.credits}</p>
+              <li key={course.id} className="bg-white p-4 rounded shadow flex justify-between items-center">
+                <div>
+                  <p className="font-bold">{course.name}</p>
+                  <p>Department: {course.department}</p>
+                  <p>Credits: {course.credits}</p>
+                  {/* You can add status and comments fields here if updated */}
+                </div>
+                <button
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                  onClick={() => handleDelete(course.enrollment_id)}  // Assume each course object includes enrollment_id from backend response.
+                >
+                  Delete
+                </button>
               </li>
             ))}
           </ul>

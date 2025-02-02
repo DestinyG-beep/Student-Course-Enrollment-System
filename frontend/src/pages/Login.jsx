@@ -15,6 +15,7 @@ const Login = () => {
     axios.post("http://localhost:5555/api/login", values)
       .then(response => {
         alert("Login successful!");
+        // In a real app, store user info and token, then update global state.
         resetForm();
       })
       .catch(error => {

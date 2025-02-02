@@ -16,7 +16,7 @@ def get_student_courses(student_id):
     if not student:
         return jsonify({'error': 'Student not found'}), 404
     enrollments = Enrollment.query.filter_by(student_id=student_id).all()
-    courses = [Course.query.get(enrollment.course_id) for enrollment in enrollments]
+    courses = [Course.query.get(e.course_id) for e in enrollments]
     courses_data = [course.to_dict() for course in courses if course]
     return jsonify({'courses': courses_data}), 200
 

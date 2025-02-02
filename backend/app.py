@@ -9,6 +9,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
 
+# Initialize the database
 db.init_app(app)
 
 # Register blueprints
@@ -38,6 +39,7 @@ def create_enrollment():
         student = Student(name=data["student_name"], email=data["student_email"])
         db.session.add(student)
         db.session.commit()
+    # Create enrollment 
     enrollment = Enrollment(
         student_id=student.id,
         course_id=data["course_id"],
@@ -76,88 +78,112 @@ def login():
 # ----- Seed Endpoint -----
 @app.route('/api/seed', methods=['POST'])
 def seed_database():
-    # Seed only if no courses exist (production-style: run once)
+    # Seed only if no courses exist
     if Course.query.first():
         return jsonify({"message": "Database already seeded!"}), 200
 
     sample_courses = [
         # Engineering Faculty (6 courses)
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510862/mechanical_o5aa0r.jpg",
-               name="Mechanical Engineering", department="Engineering", credits=4,
-               description="Study of mechanical systems and design.", seats_available=50),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510863/electrical_oxzikv.jpg",
-               name="Electrical Engineering", department="Engineering", credits=4,
-               description="Focus on electrical circuits and power systems.", seats_available=45),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510845/civil_rrtexj.jpg",
-               name="Civil Engineering", department="Engineering", credits=3,
-               description="Design and construction of infrastructure.", seats_available=40),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510845/civil_rrtexj.jpg",
-               name="Computer Engineering", department="Engineering", credits=4,
-               description="Combines electrical engineering and computer science.", seats_available=35),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510853/chemical_kokrzv.jpg",
-               name="Chemical Engineering", department="Engineering", credits=4,
-               description="Application of chemical processes.", seats_available=30),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510854/aerospace_odj7bw.jpg",
-               name="Aerospace Engineering", department="Engineering", credits=4,
-               description="Design and analysis of aircraft and spacecraft.", seats_available=25),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510862/mechanical_o5aa0r.jpg",
+            name="Mechanical Engineering", department="Engineering", credits=4,
+            description="Study of mechanical systems and design.", seats_available=50),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510863/electrical_oxzikv.jpg",
+            name="Electrical Engineering", department="Engineering", credits=4,
+            description="Focus on electrical circuits and power systems.", seats_available=45),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510845/civil_rrtexj.jpg",
+            name="Civil Engineering", department="Engineering", credits=3,
+            description="Design and construction of infrastructure.", seats_available=40),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510845/civil_rrtexj.jpg",
+            name="Computer Engineering", department="Engineering", credits=4,
+            description="Combines electrical engineering and computer science.", seats_available=35),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510853/chemical_kokrzv.jpg",
+            name="Chemical Engineering", department="Engineering", credits=4,
+            description="Application of chemical processes.", seats_available=30),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510854/aerospace_odj7bw.jpg",
+            name="Aerospace Engineering", department="Engineering", credits=4,
+            description="Design and analysis of aircraft and spacecraft.", seats_available=25),
         # Law and Administration (5 courses)
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510831/criminal_exgutv.jpg",
-               name="Criminal Law", department="Law and Administration", credits=3,
-               description="Study of criminal justice and legal principles.", seats_available=60),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510838/civil_law_bphn1q.jpg",
-               name="Civil Law", department="Law and Administration", credits=3,
-               description="Fundamentals of civil litigation and contracts.", seats_available=55),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510831/criminal_exgutv.jpg",
-               name="Public Administration", department="Law and Administration", credits=3,
-               description="Principles of public management and policy.", seats_available=50),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510828/international_xjlapq.jpg",
-               name="International Law", department="Law and Administration", credits=3,
-               description="Legal frameworks governing international relations.", seats_available=45),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510830/constitutional_s0y5cv.jpg",
-               name="Constitutional Law", department="Law and Administration", credits=3,
-               description="Examination of constitutional rights.", seats_available=40),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510831/criminal_exgutv.jpg",
+            name="Criminal Law", department="Law and Administration", credits=3,
+            description="Study of criminal justice and legal principles.", seats_available=60),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510838/civil_law_bphn1q.jpg",
+            name="Civil Law", department="Law and Administration", credits=3,
+            description="Fundamentals of civil litigation and contracts.", seats_available=55),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510831/criminal_exgutv.jpg",
+            name="Public Administration", department="Law and Administration", credits=3,
+            description="Principles of public management and policy.", seats_available=50),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510828/international_xjlapq.jpg",
+            name="International Law", department="Law and Administration", credits=3,
+            description="Legal frameworks governing international relations.", seats_available=45),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510830/constitutional_s0y5cv.jpg",
+            name="Constitutional Law", department="Law and Administration", credits=3,
+            description="Examination of constitutional rights.", seats_available=40),
         # Languages (5 courses)
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1738510816/english_adzr0l.png",
-               name="English Literature", department="Languages", credits=3,
-               description="Study of classic and modern literature.", seats_available=70),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1738510816/spanish_hxctba.jpg",
-               name="Spanish Language", department="Languages", credits=3,
-               description="Comprehensive Spanish language course.", seats_available=65),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1738510832/french_de829k.png",
-               name="French Language", department="Languages", credits=3,
-               description="Fundamentals of the French language and culture.", seats_available=60),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1738510816/german_holea4.png",
-               name="German Language", department="Languages", credits=3,
-               description="Basics of German language and communication.", seats_available=55),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1738510831/Chinese_vpoyfa.png",
-               name="Chinese Language", department="Languages", credits=3,
-               description="Introduction to Mandarin Chinese.", seats_available=50),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1738510816/english_adzr0l.png",
+            name="English Literature", department="Languages", credits=3,
+            description="Study of classic and modern literature.", seats_available=70),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1738510816/spanish_hxctba.jpg",
+            name="Spanish Language", department="Languages", credits=3,
+            description="Comprehensive Spanish language course.", seats_available=65),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1738510832/french_de829k.png",
+            name="French Language", department="Languages", credits=3,
+            description="Fundamentals of the French language and culture.", seats_available=60),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1738510816/german_holea4.png",
+            name="German Language", department="Languages", credits=3,
+            description="Basics of German language and communication.", seats_available=55),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1738510831/Chinese_vpoyfa.png",
+            name="Chinese Language", department="Languages", credits=3,
+            description="Introduction to Mandarin Chinese.", seats_available=50),
         # Business (4 courses)
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510835/buss_management_exkojr.jpg",
-               name="Business Management", department="Business", credits=3,
-               description="Core principles of managing a business.", seats_available=80),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510835/marketing_rfwmqa.jpg",
-               name="Marketing", department="Business", credits=3,
-               description="Study of marketing strategies.", seats_available=75),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510835/finance_gpbeja.jpg",
-               name="Finance", department="Business", credits=3,
-               description="Introduction to corporate finance.", seats_available=70),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510824/entrepreneuring_bg8zkp.jpg",
-               name="Entrepreneurship", department="Business", credits=3,
-               description="Essentials of starting and managing new ventures.", seats_available=65),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510835/buss_management_exkojr.jpg",
+            name="Business Management", department="Business", credits=3,
+            description="Core principles of managing a business.", seats_available=80),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510835/marketing_rfwmqa.jpg",
+            name="Marketing", department="Business", credits=3,
+            description="Study of marketing strategies.", seats_available=75),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510835/finance_gpbeja.jpg",
+            name="Finance", department="Business", credits=3,
+            description="Introduction to corporate finance.", seats_available=70),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510824/entrepreneuring_bg8zkp.jpg",
+            name="Entrepreneurship", department="Business", credits=3,
+            description="Essentials of starting and managing new ventures.", seats_available=65),
         # Art (4 courses)
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510823/art_history_up3vem.jpg",
-               name="Art History", department="Art", credits=3,
-               description="Overview of art movements and history.", seats_available=40),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510820/painting_osozkf.jpg",
-               name="Painting", department="Art", credits=3,
-               description="Techniques and theory of painting.", seats_available=35),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510830/sculpture_sya9jz.jpg",
-               name="Sculpture", department="Art", credits=3,
-               description="Study of sculpture techniques.", seats_available=30),
-        Course(image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510820/photography_xcxabg.jpg",
-               name="Photography", department="Art", credits=3,
-               description="Principles of photography and visual composition.", seats_available=25)
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510823/art_history_up3vem.jpg",
+            name="Art History", department="Art", credits=3,
+            description="Overview of art movements and history.", seats_available=40),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510820/painting_osozkf.jpg",
+            name="Painting", department="Art", credits=3,
+            description="Techniques and theory of painting.", seats_available=35),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510830/sculpture_sya9jz.jpg",
+            name="Sculpture", department="Art", credits=3,
+            description="Study of sculpture techniques.", seats_available=30),
+        Course(
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1738510820/photography_xcxabg.jpg",
+            name="Photography", department="Art", credits=3,
+            description="Principles of photography and visual composition.", seats_available=25)
     ]
     db.session.bulk_save_objects(sample_courses)
     db.session.commit()
