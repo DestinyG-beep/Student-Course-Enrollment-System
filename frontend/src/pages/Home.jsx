@@ -4,9 +4,12 @@ import { Link } from "react-router-dom";
 const Home = ({ courses = [] }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredCourses = courses.filter((course) =>
-    course.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Use Array.isArray() to ensure that courses is an array before filtering
+  const filteredCourses = Array.isArray(courses)
+    ? courses.filter((course) =>
+        course.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
   return (
     <div className="bg-gray-100">

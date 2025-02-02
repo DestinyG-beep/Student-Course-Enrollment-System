@@ -9,7 +9,9 @@ const Courses = () => {
   useEffect(() => {
     axios.get("http://localhost:5555/api/courses")
       .then((response) => {
-        setCourses(response.data);
+        // If the response contains a 'courses' key, use that array.
+        const data = response.data.courses ? response.data.courses : response.data;
+        setCourses(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((err) => {
