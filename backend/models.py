@@ -10,6 +10,7 @@ class Student(db.Model):
 
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    image = db.Column(db.String(250))  # URL of the image
     name = db.Column(db.String(100), nullable=False)
     department = db.Column(db.String(100), nullable=False)
     credits = db.Column(db.Integer, nullable=False)
@@ -20,6 +21,7 @@ class Course(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
+            "image": self.image,
             "name": self.name,
             "department": self.department,
             "credits": self.credits,
@@ -32,7 +34,7 @@ class Enrollment(db.Model):
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     enrollment_date = db.Column(db.DateTime, default=db.func.now())
-    note = db.Column(db.String(250))  # extra attribute submitted by the user
+    note = db.Column(db.String(250))  # Extra attribute the user can submit
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
