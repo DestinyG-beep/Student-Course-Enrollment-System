@@ -16,7 +16,7 @@ db.init_app(app)
 app.register_blueprint(student_bp)
 app.register_blueprint(course_bp)
 
-# ----- Enrollment Endpoints (Standalone) -----
+# --- Enrollment Endpoints (Standalone) ---
 @app.route('/api/enrollments', methods=['GET'])
 def get_enrollments():
     enrollments = Enrollment.query.all()
@@ -32,18 +32,19 @@ def create_enrollment():
     data = request.get_json()
     if not data or not data.get("student_name") or not data.get("student_email") or not data.get("course_id"):
         return jsonify({"error": "Missing data"}), 400
-    # Find an existing student by email; create one if not exists.
+    # Look for an existing student by email; if not found, create one.
     student = Student.query.filter_by(email=data["student_email"]).first()
     if not student:
         student = Student(name=data["student_name"], email=data["student_email"])
         db.session.add(student)
         db.session.commit()
+    # Optionally, check for seat availability here and update seats_available.
     enrollment = Enrollment(student_id=student.id, course_id=data["course_id"])
     db.session.add(enrollment)
     db.session.commit()
     return jsonify({"message": "Enrollment created successfully", "id": enrollment.id}), 201
 
-# ----- User Authentication Endpoints -----
+# --- User Authentication Endpoints ---
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -69,49 +70,73 @@ def login():
         return jsonify({"error": "Invalid credentials"}), 401
     return jsonify({"message": "Login successful"}), 200
 
-# ----- Seed Endpoint -----
+# --- Seed Endpoint ---
 @app.route('/api/seed', methods=['POST'])
 def seed_database():
-    # Only seed if no courses exist (production-style: run once)
+    # Production style: seed only if there are no courses
     if Course.query.first():
         return jsonify({"message": "Database already seeded!"}), 200
 
     sample_courses = [
-        # Engineering (6 courses)
-        Course(name="Mechanical Engineering", department="Engineering", credits=4, description="Study of mechanical systems."),
-        Course(name="Electrical Engineering", department="Engineering", credits=4, description="Focus on electrical systems and circuits."),
-        Course(name="Civil Engineering", department="Engineering", credits=3, description="Design and construction of infrastructure."),
-        Course(name="Computer Engineering", department="Engineering", credits=4, description="Combines electrical engineering and computer science."),
-        Course(name="Chemical Engineering", department="Engineering", credits=4, description="Application of chemical processes."),
-        Course(name="Aerospace Engineering", department="Engineering", credits=4, description="Design of aircraft and spacecraft."),
+        # Engineering Faculty (6 courses)
+        Course(name="Mechanical Engineering", department="Engineering", credits=4,
+               description="Study of mechanical systems and design.", seats_available=50),
+        Course(name="Electrical Engineering", department="Engineering", credits=4,
+               description="Focus on electrical circuits and power systems.", seats_available=45),
+        Course(name="Civil Engineering", department="Engineering", credits=3,
+               description="Design and construction of infrastructure.", seats_available=40),
+        Course(name="Computer Engineering", department="Engineering", credits=4,
+               description="Combines electrical engineering and computer science.", seats_available=35),
+        Course(name="Chemical Engineering", department="Engineering", credits=4,
+               description="Application of chemical processes in engineering.", seats_available=30),
+        Course(name="Aerospace Engineering", department="Engineering", credits=4,
+               description="Design and analysis of aircraft and spacecraft.", seats_available=25),
         # Law and Administration (5 courses)
-        Course(name="Criminal Law", department="Law and Administration", credits=3, description="Study of criminal justice system."),
-        Course(name="Civil Law", department="Law and Administration", credits=3, description="Fundamentals of civil law."),
-        Course(name="Public Administration", department="Law and Administration", credits=3, description="Principles of public management."),
-        Course(name="International Law", department="Law and Administration", credits=3, description="Legal aspects of international relations."),
-        Course(name="Constitutional Law", department="Law and Administration", credits=3, description="Study of constitutional frameworks."),
+        Course(name="Criminal Law", department="Law and Administration", credits=3,
+               description="Study of criminal justice and legal principles.", seats_available=60),
+        Course(name="Civil Law", department="Law and Administration", credits=3,
+               description="Fundamentals of civil litigation and contracts.", seats_available=55),
+        Course(name="Public Administration", department="Law and Administration", credits=3,
+               description="Principles of public management and policy.", seats_available=50),
+        Course(name="International Law", department="Law and Administration", credits=3,
+               description="Legal frameworks governing international relations.", seats_available=45),
+        Course(name="Constitutional Law", department="Law and Administration", credits=3,
+               description="Examination of constitutional principles and rights.", seats_available=40),
         # Languages (5 courses)
-        Course(name="English Literature", department="Languages", credits=3, description="Study of English literary works."),
-        Course(name="Spanish Language", department="Languages", credits=3, description="Learning Spanish language and culture."),
-        Course(name="French Language", department="Languages", credits=3, description="Study of French language."),
-        Course(name="German Language", department="Languages", credits=3, description="Study of German language."),
-        Course(name="Chinese Language", department="Languages", credits=3, description="Introduction to Mandarin Chinese."),
+        Course(name="English Literature", department="Languages", credits=3,
+               description="Study of classic and modern English literature.", seats_available=70),
+        Course(name="Spanish Language", department="Languages", credits=3,
+               description="Comprehensive Spanish language course.", seats_available=65),
+        Course(name="French Language", department="Languages", credits=3,
+               description="Fundamentals of the French language and culture.", seats_available=60),
+        Course(name="German Language", department="Languages", credits=3,
+               description="Basics of German language and communication.", seats_available=55),
+        Course(name="Chinese Language", department="Languages", credits=3,
+               description="Introduction to Mandarin Chinese.", seats_available=50),
         # Business (4 courses)
-        Course(name="Business Management", department="Business", credits=3, description="Fundamentals of managing a business."),
-        Course(name="Marketing", department="Business", credits=3, description="Principles of marketing."),
-        Course(name="Finance", department="Business", credits=3, description="Basics of corporate finance."),
-        Course(name="Entrepreneurship", department="Business", credits=3, description="Start-up management and innovation."),
+        Course(name="Business Management", department="Business", credits=3,
+               description="Core principles of managing a business enterprise.", seats_available=80),
+        Course(name="Marketing", department="Business", credits=3,
+               description="Study of marketing strategies and consumer behavior.", seats_available=75),
+        Course(name="Finance", department="Business", credits=3,
+               description="Introduction to corporate finance and investment.", seats_available=70),
+        Course(name="Entrepreneurship", department="Business", credits=3,
+               description="Essentials of starting and managing new ventures.", seats_available=65),
         # Art (4 courses)
-        Course(name="Art History", department="Art", credits=3, description="Study of art through the ages."),
-        Course(name="Painting", department="Art", credits=3, description="Techniques and theory of painting."),
-        Course(name="Sculpture", department="Art", credits=3, description="Techniques in sculpture."),
-        Course(name="Photography", department="Art", credits=3, description="Principles of photography and composition.")
+        Course(name="Art History", department="Art", credits=3,
+               description="Overview of art movements and history.", seats_available=40),
+        Course(name="Painting", department="Art", credits=3,
+               description="Techniques and theory of painting.", seats_available=35),
+        Course(name="Sculpture", department="Art", credits=3,
+               description="Study of three-dimensional art and sculpture techniques.", seats_available=30),
+        Course(name="Photography", department="Art", credits=3,
+               description="Principles of photography and visual composition.", seats_available=25)
     ]
     db.session.bulk_save_objects(sample_courses)
     db.session.commit()
     return jsonify({"message": "Database seeded successfully!"}), 201
 
-# ----- Initialize Database Tables -----
+# --- Initialize Database Tables ---
 with app.app_context():
     db.create_all()
 

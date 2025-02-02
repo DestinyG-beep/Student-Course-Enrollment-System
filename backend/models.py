@@ -14,13 +14,25 @@ class Course(db.Model):
     department = db.Column(db.String(100), nullable=False)
     credits = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(250))
+    seats_available = db.Column(db.Integer, nullable=False)
     enrollments = db.relationship('Enrollment', backref='course', cascade='all, delete-orphan')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "department": self.department,
+            "credits": self.credits,
+            "description": self.description,
+            "seats_available": self.seats_available
+        }
 
 class Enrollment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     enrollment_date = db.Column(db.DateTime, default=db.func.now())
+    note = db.Column(db.String(250))  # extra attribute submitted by the user
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
