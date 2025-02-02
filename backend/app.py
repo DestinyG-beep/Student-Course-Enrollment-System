@@ -9,14 +9,13 @@ app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
 
-# Initialize the database
 db.init_app(app)
 
 # Register blueprints for students and courses
 app.register_blueprint(student_bp)
 app.register_blueprint(course_bp)
 
-# --- Enrollment Endpoints (Standalone) ---
+# ----- Enrollment Endpoints -----
 @app.route('/api/enrollments', methods=['GET'])
 def get_enrollments():
     enrollments = Enrollment.query.all()
@@ -24,6 +23,7 @@ def get_enrollments():
         "id": e.id,
         "student_id": e.student_id,
         "course_id": e.course_id,
+        "note": e.note,
         "enrollment_date": e.enrollment_date.isoformat() if e.enrollment_date else None
     } for e in enrollments])
 
@@ -32,19 +32,23 @@ def create_enrollment():
     data = request.get_json()
     if not data or not data.get("student_name") or not data.get("student_email") or not data.get("course_id"):
         return jsonify({"error": "Missing data"}), 400
-    # Look for an existing student by email; if not found, create one.
+    # Find or create the student
     student = Student.query.filter_by(email=data["student_email"]).first()
     if not student:
         student = Student(name=data["student_name"], email=data["student_email"])
         db.session.add(student)
         db.session.commit()
-    # Optionally, check for seat availability here and update seats_available.
-    enrollment = Enrollment(student_id=student.id, course_id=data["course_id"])
+    # Create enrollment; note is optional.
+    enrollment = Enrollment(
+        student_id=student.id,
+        course_id=data["course_id"],
+        note=data.get("note")
+    )
     db.session.add(enrollment)
     db.session.commit()
     return jsonify({"message": "Enrollment created successfully", "id": enrollment.id}), 201
 
-# --- User Authentication Endpoints ---
+# ----- User Authentication Endpoints -----
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -70,10 +74,10 @@ def login():
         return jsonify({"error": "Invalid credentials"}), 401
     return jsonify({"message": "Login successful"}), 200
 
-# --- Seed Endpoint ---
+# ----- Seed Endpoint -----
 @app.route('/api/seed', methods=['POST'])
 def seed_database():
-    # Production style: seed only if there are no courses
+    # Seed only if no courses exist
     if Course.query.first():
         return jsonify({"message": "Database already seeded!"}), 200
 
@@ -88,7 +92,7 @@ def seed_database():
         Course(name="Computer Engineering", department="Engineering", credits=4,
                description="Combines electrical engineering and computer science.", seats_available=35),
         Course(name="Chemical Engineering", department="Engineering", credits=4,
-               description="Application of chemical processes in engineering.", seats_available=30),
+               description="Application of chemical processes.", seats_available=30),
         Course(name="Aerospace Engineering", department="Engineering", credits=4,
                description="Design and analysis of aircraft and spacecraft.", seats_available=25),
         # Law and Administration (5 courses)
@@ -101,10 +105,10 @@ def seed_database():
         Course(name="International Law", department="Law and Administration", credits=3,
                description="Legal frameworks governing international relations.", seats_available=45),
         Course(name="Constitutional Law", department="Law and Administration", credits=3,
-               description="Examination of constitutional principles and rights.", seats_available=40),
+               description="Examination of constitutional rights.", seats_available=40),
         # Languages (5 courses)
         Course(name="English Literature", department="Languages", credits=3,
-               description="Study of classic and modern English literature.", seats_available=70),
+               description="Study of classic and modern literature.", seats_available=70),
         Course(name="Spanish Language", department="Languages", credits=3,
                description="Comprehensive Spanish language course.", seats_available=65),
         Course(name="French Language", department="Languages", credits=3,
@@ -115,11 +119,11 @@ def seed_database():
                description="Introduction to Mandarin Chinese.", seats_available=50),
         # Business (4 courses)
         Course(name="Business Management", department="Business", credits=3,
-               description="Core principles of managing a business enterprise.", seats_available=80),
+               description="Core principles of managing a business.", seats_available=80),
         Course(name="Marketing", department="Business", credits=3,
-               description="Study of marketing strategies and consumer behavior.", seats_available=75),
+               description="Study of marketing strategies.", seats_available=75),
         Course(name="Finance", department="Business", credits=3,
-               description="Introduction to corporate finance and investment.", seats_available=70),
+               description="Introduction to corporate finance.", seats_available=70),
         Course(name="Entrepreneurship", department="Business", credits=3,
                description="Essentials of starting and managing new ventures.", seats_available=65),
         # Art (4 courses)
@@ -128,7 +132,7 @@ def seed_database():
         Course(name="Painting", department="Art", credits=3,
                description="Techniques and theory of painting.", seats_available=35),
         Course(name="Sculpture", department="Art", credits=3,
-               description="Study of three-dimensional art and sculpture techniques.", seats_available=30),
+               description="Study of sculpture techniques.", seats_available=30),
         Course(name="Photography", department="Art", credits=3,
                description="Principles of photography and visual composition.", seats_available=25)
     ]
@@ -136,7 +140,7 @@ def seed_database():
     db.session.commit()
     return jsonify({"message": "Database seeded successfully!"}), 201
 
-# --- Initialize Database Tables ---
+# ----- Initialize Database Tables -----
 with app.app_context():
     db.create_all()
 
