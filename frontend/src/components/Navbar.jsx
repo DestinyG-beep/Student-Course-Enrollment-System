@@ -34,8 +34,8 @@ const Navbar = ({ user }) => {
             className="rounded-full w-10 h-10 mr-2"
           />
           <div className="text-black">
-            <p className="font-bold">{user ? user.name : "John Doe"}</p>
-            <p className="text-xs">{user ? user.email : "john@example.com"}</p>
+            <p className="font-bold">{user ? user.name : "User101"}</p>
+            <p className="text-xs">{user ? user.email : "User101@gmail.com"}</p>
           </div>
         </div>
       </div>
