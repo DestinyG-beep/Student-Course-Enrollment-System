@@ -13,7 +13,7 @@ const Register = () => {
   });
 
   const onSubmit = (values, { resetForm, setSubmitting }) => {
-    axios.post("http://localhost:5555/api/register", values)
+    axios.post("https://student-course-enrollment-system-1.onrender.com/api/register", values)
       .then(response => {
         alert("Registration successful!");
         resetForm();

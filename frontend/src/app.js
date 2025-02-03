@@ -1,5 +1,5 @@
 // src/app.js
-const API_URL = "http://127.0.0.1:5555";
+const API_URL = "https://student-course-enrollment-system-1.onrender.com";
 
 export async function fetchStudents() {
   const response = await fetch(`${API_URL}/api/students/`);
@@ -19,3 +19,4 @@ export async function enrollStudent(studentId, courseId, note = "") {
   });
   return response.json();
 }
+/*not in use */

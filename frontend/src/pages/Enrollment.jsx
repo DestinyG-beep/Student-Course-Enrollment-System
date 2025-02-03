@@ -12,7 +12,7 @@ const Enrollment = ({ user }) => {
 
   // Fetch all courses for the enrollment dropdown.
   useEffect(() => {
-    axios.get("http://localhost:5555/api/courses")
+    axios.get("https://student-course-enrollment-system-1.onrender.com/api/courses")
       .then((response) => {
         const data = response.data.courses || response.data;
         setAllCourses(Array.isArray(data) ? data : []);
@@ -26,7 +26,7 @@ const Enrollment = ({ user }) => {
 
   // Fetch enrolled courses for the logged-in user.
   const fetchMyCourses = () => {
-    axios.get(`http://localhost:5555/api/students/${user.id}/courses`)
+    axios.get(`https://student-course-enrollment-system-1.onrender.com/api/students/${user.id}/courses`)
       .then((response) => {
         const data = response.data.courses || [];
         setMyCourses(Array.isArray(data) ? data : []);
@@ -59,7 +59,7 @@ const Enrollment = ({ user }) => {
       course_id: values.course_id,
       note: "" // initially empty; can be updated later via PATCH
     };
-    axios.post("http://localhost:5555/api/enrollments", enrollmentData)
+    axios.post("https://student-course-enrollment-system-1.onrender.com/api/enrollments", enrollmentData)
       .then((response) => {
         alert("Enrollment successful!");
         resetForm();
@@ -74,7 +74,7 @@ const Enrollment = ({ user }) => {
 
   // Delete enrollment; assumes each myCourses object contains an enrollment_id field.
   const handleDelete = (enrollmentId) => {
-    axios.delete(`http://localhost:5555/api/enrollments/${enrollmentId}`)
+    axios.delete(`hhttps://student-course-enrollment-system-1.onrender.com/api/enrollments/${enrollmentId}`)
       .then(() => {
         alert("Enrollment deleted.");
         fetchMyCourses();
@@ -86,7 +86,7 @@ const Enrollment = ({ user }) => {
 
   // Update enrollment status and note (for demo, hard-coded update)
   const handleUpdate = (enrollmentId, newStatus, newNote) => {
-    axios.patch(`http://localhost:5555/api/enrollments/${enrollmentId}`, {
+    axios.patch(`https://student-course-enrollment-system-1.onrender.com/api/enrollments/${enrollmentId}`, {
       status: newStatus,
       note: newNote
     })

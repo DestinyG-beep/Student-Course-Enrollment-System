@@ -19,7 +19,7 @@ const Courses = ({ courses: initialCourses = [] }) => {
   // Fetch courses if not provided via props
   useEffect(() => {
     if (initialCourses.length === 0) {
-      axios.get("http://localhost:5555/api/courses")
+      axios.get("https://student-course-enrollment-system-1.onrender.com/api/courses")
         .then(response => {
           const data = response.data.courses ? response.data.courses : response.data;
           setCourses(Array.isArray(data) ? data : []);
