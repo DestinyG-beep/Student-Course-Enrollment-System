@@ -1,3 +1,4 @@
+# models.py
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -40,7 +41,8 @@ class Enrollment(db.Model):
     student_id = db.Column(db.Integer, db.ForeignKey("student.id"), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
     enrollment_date = db.Column(db.DateTime, default=db.func.now())
-    note = db.Column(db.String(250))  # User-submitted extra attribute (status/comments)
+    note = db.Column(db.String(250))  # For comments or additional info
+    status = db.Column(db.String(20), nullable=True, default="ongoing")  # e.g., ongoing, deferred, dropped, complete
 
 class User(db.Model):
     __tablename__ = "user"

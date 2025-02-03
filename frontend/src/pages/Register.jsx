@@ -1,3 +1,4 @@
+// src/pages/Register.jsx
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -19,13 +20,13 @@ const Register = () => {
       })
       .catch(error => {
         alert("Registration failed.");
-        console.error(error);
+        console.error("Registration error:", error);
       })
       .finally(() => setSubmitting(false));
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
+    <div className="p-6 max-w-md mx-auto mt-20">
       <h1 className="text-3xl font-bold text-blue-600 mb-4">Register</h1>
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {({ isSubmitting }) => (

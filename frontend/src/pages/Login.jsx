@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -15,18 +16,19 @@ const Login = () => {
     axios.post("http://localhost:5555/api/login", values)
       .then(response => {
         alert("Login successful!");
-        // In a real app, store user info and token, then update global state.
+        // In a real application, store the token and update global state here
+        console.log("Login response:", response.data);
         resetForm();
       })
       .catch(error => {
         alert("Login failed. Please check your credentials.");
-        console.error(error);
+        console.error("Login error:", error);
       })
       .finally(() => setSubmitting(false));
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
+    <div className="p-6 max-w-md mx-auto mt-20">
       <h1 className="text-3xl font-bold text-blue-600 mb-4">Login</h1>
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {({ isSubmitting }) => (

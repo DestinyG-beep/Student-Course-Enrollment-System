@@ -1,3 +1,4 @@
+// src/pages/Enrollment.jsx
 import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -9,7 +10,7 @@ const Enrollment = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch all courses for the dropdown.
+  // Fetch all courses for the enrollment dropdown.
   useEffect(() => {
     axios.get("http://localhost:5555/api/courses")
       .then((response) => {
@@ -51,10 +52,12 @@ const Enrollment = ({ user }) => {
 
   const onSubmit = (values, { resetForm, setSubmitting }) => {
     const enrollmentData = {
+      student_id: user.id,
+      // Send fallback values for student in case not found:
       student_name: user.name,
       student_email: user.email,
       course_id: values.course_id,
-      note: ""  // Initially empty; user can update status/comment later if implemented
+      note: "" // initially empty; can be updated later via PATCH
     };
     axios.post("http://localhost:5555/api/enrollments", enrollmentData)
       .then((response) => {
@@ -69,7 +72,7 @@ const Enrollment = ({ user }) => {
       .finally(() => setSubmitting(false));
   };
 
-  // For deleting an enrollment (not fully implemented on the backend here, but you could add a DELETE endpoint)
+  // Delete enrollment; assumes each myCourses object contains an enrollment_id field.
   const handleDelete = (enrollmentId) => {
     axios.delete(`http://localhost:5555/api/enrollments/${enrollmentId}`)
       .then(() => {
@@ -81,17 +84,25 @@ const Enrollment = ({ user }) => {
       });
   };
 
-  // For updating course status and adding comments, you would implement a PATCH endpoint on the backend.
-  // This demo does not include that logic.
+  // Update enrollment status and note (for demo, hard-coded update)
+  const handleUpdate = (enrollmentId, newStatus, newNote) => {
+    axios.patch(`http://localhost:5555/api/enrollments/${enrollmentId}`, {
+      status: newStatus,
+      note: newNote
+    })
+      .then(() => {
+        alert("Enrollment updated.");
+        fetchMyCourses();
+      })
+      .catch(err => {
+        console.error("Error updating enrollment:", err);
+      });
+  };
 
   return (
     <div className="p-6 pt-20">
       <h1 className="text-3xl font-bold text-blue-600 mb-4">Enroll in a Course</h1>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-      >
+      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {formik => (
           <Form className="space-y-4 max-w-md mx-auto">
             <div>
@@ -121,19 +132,28 @@ const Enrollment = ({ user }) => {
         {myCourses.length > 0 ? (
           <ul className="space-y-2">
             {myCourses.map(course => (
-              <li key={course.id} className="bg-white p-4 rounded shadow flex justify-between items-center">
-                <div>
+              <li key={course.enrollment_id || course.id} className="bg-white p-4 rounded shadow flex flex-col sm:flex-row justify-between items-center">
+                <div className="mb-2 sm:mb-0">
                   <p className="font-bold">{course.name}</p>
                   <p>Department: {course.department}</p>
                   <p>Credits: {course.credits}</p>
-                  {/* You can add status and comments fields here if updated */}
+                  <p>Status: {course.status}</p>
+                  <p>Note: {course.note || "No comments"}</p>
                 </div>
-                <button
-                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
-                  onClick={() => handleDelete(course.enrollment_id)}  // Assume each course object includes enrollment_id from backend response.
-                >
-                  Delete
-                </button>
+                <div className="flex space-x-2 mt-2 sm:mt-0">
+                  <button
+                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                    onClick={() => handleDelete(course.enrollment_id)}
+                  >
+                    Delete
+                  </button>
+                  <button
+                    className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
+                    onClick={() => handleUpdate(course.enrollment_id, "complete", "Finished successfully")}
+                  >
+                    Mark Complete
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

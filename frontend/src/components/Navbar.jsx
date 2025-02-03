@@ -1,26 +1,44 @@
+// src/components/Navbar.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ user }) => {
   return (
-    <nav className="bg-blue-600 p-4 fixed top-0 left-0 right-0 z-50">
-      <ul className="flex space-x-4 text-white justify-center">
-        <li>
-          <Link to="/" className="hover:text-gray-200 transition">Home</Link>
-        </li>
-        <li>
-          <Link to="/courses" className="hover:text-gray-200 transition">Courses</Link>
-        </li>
-        <li>
-          <Link to="/enrollment" className="hover:text-gray-200 transition">Enrollment</Link>
-        </li>
-        <li>
-          <Link to="/register" className="hover:text-gray-200 transition">Register</Link>
-        </li>
-        <li>
-          <Link to="/login" className="hover:text-gray-200 transition">Login</Link>
-        </li>
-      </ul>
+    <nav className="fixed top-0 left-0 right-0 bg-blue-600 text-white shadow-md z-50">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+        {/* Left: App Name */}
+        <Link to="/" className="text-2xl font-bold">CourseHub</Link>
+        {/* Center: Navigation Links */}
+        <ul className="flex space-x-4 text-lg">
+          <li>
+            <Link to="/" className="hover:underline">Home</Link>
+          </li>
+          <li>
+            <Link to="/courses" className="hover:underline">Courses</Link>
+          </li>
+          <li>
+            <Link to="/enrollment" className="hover:underline">Enrollment</Link>
+          </li>
+          <li>
+            <Link to="/register" className="hover:underline">Register</Link>
+          </li>
+          <li>
+            <Link to="/login" className="hover:underline">Login</Link>
+          </li>
+        </ul>
+        {/* Right: User Info Badge */}
+        <div className="flex items-center bg-white rounded-full shadow p-2">
+          <img
+            src="https://res.cloudinary.com/dyrayvgch/image/upload/c_thumb,w_40,g_face/v1738510819/user_icon_pkyxja.jpg"
+            alt="User Avatar"
+            className="rounded-full w-10 h-10 mr-2"
+          />
+          <div className="text-black">
+            <p className="font-bold">{user ? user.name : "John Doe"}</p>
+            <p className="text-xs">{user ? user.email : "john@example.com"}</p>
+          </div>
+        </div>
+      </div>
     </nav>
   );
 };

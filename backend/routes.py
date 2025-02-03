@@ -1,3 +1,4 @@
+# routes.py
 from flask import Blueprint, request, jsonify
 from models import db, Student, Course, Enrollment
 
@@ -16,9 +17,17 @@ def get_student_courses(student_id):
     if not student:
         return jsonify({'error': 'Student not found'}), 404
     enrollments = Enrollment.query.filter_by(student_id=student_id).all()
-    courses = [Course.query.get(e.course_id) for e in enrollments]
-    courses_data = [course.to_dict() for course in courses if course]
-    return jsonify({'courses': courses_data}), 200
+    courses = []
+    for e in enrollments:
+        course = Course.query.get(e.course_id)
+        if course:
+            course_dict = course.to_dict()
+            # Include enrollment-specific info
+            course_dict["enrollment_id"] = e.id
+            course_dict["status"] = e.status
+            course_dict["note"] = e.note
+            courses.append(course_dict)
+    return jsonify({'courses': courses}), 200
 
 # ----- Course Blueprint -----
 course_bp = Blueprint('courses', __name__, url_prefix='/api/courses')

@@ -1,3 +1,4 @@
+// src/pages/Courses.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -5,14 +6,14 @@ const Courses = ({ courses: initialCourses = [] }) => {
   const [courses, setCourses] = useState(initialCourses);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  // Filters state for search by name, credits, department, and minimum seats.
+  
+  // Filter state
   const [searchTerm, setSearchTerm] = useState("");
   const [minCredits, setMinCredits] = useState("");
   const [department, setDepartment] = useState("");
   const [minSeats, setMinSeats] = useState("");
 
-  // For expanded course details view
+  // For expanded details view
   const [expandedCourse, setExpandedCourse] = useState(null);
 
   // Fetch courses if not provided via props
@@ -33,7 +34,6 @@ const Courses = ({ courses: initialCourses = [] }) => {
     }
   }, [initialCourses]);
 
-  // Apply filters
   const filteredCourses = courses.filter(course => {
     const matchesName = course.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCredits = minCredits === "" || course.credits >= Number(minCredits);
@@ -43,8 +43,8 @@ const Courses = ({ courses: initialCourses = [] }) => {
   });
 
   return (
-    <div className="p-6 pt-20"> {/* Extra top padding for fixed navbar */}
-      {/* Fixed Horizontal Search Bar */}
+    <div className="p-6 pt-20">
+      {/* Fixed Horizontal Search/Filter Bar */}
       <div className="fixed top-16 left-0 right-0 bg-white shadow z-40 p-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
           <input
@@ -83,7 +83,7 @@ const Courses = ({ courses: initialCourses = [] }) => {
         </div>
       </div>
 
-      <div className="mt-24"> {/* Margin-top to account for fixed search bar */}
+      <div className="mt-24">
         <h1 className="text-3xl font-bold text-blue-600 mb-4">Available Courses</h1>
         {loading && <p>Loading courses...</p>}
         {error && <p className="text-red-500">{error}</p>}
@@ -92,7 +92,7 @@ const Courses = ({ courses: initialCourses = [] }) => {
             filteredCourses.map((course) => (
               <li key={course.id} className="bg-white p-4 shadow rounded">
                 <div className="flex justify-between items-center">
-                  <div>
+                  <div className="flex-1">
                     <p className="font-bold">{course.name}</p>
                     <p>Department: {course.department}</p>
                     <p>Credits: {course.credits}</p>
@@ -106,15 +106,15 @@ const Courses = ({ courses: initialCourses = [] }) => {
                   </button>
                 </div>
                 {expandedCourse === course.id && (
-                  <div className="mt-4 flex">
-                    <div className="w-1/4">
+                  <div className="mt-4 flex flex-col sm:flex-row"> 
+                    <div className="sm:w-1/4 w-full mb-4 sm:mb-0">
                       <img
                         src={course.image}
                         alt={course.name}
                         className="rounded object-cover h-32 w-full"
                       />
                     </div>
-                    <div className="w-3/4 pl-4">
+                    <div className="sm:w-3/4 pl-0 sm:pl-4">
                       <p className="text-gray-700">{course.description || "No description available."}</p>
                     </div>
                   </div>

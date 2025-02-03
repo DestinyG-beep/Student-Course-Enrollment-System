@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import axios from 'axios';
@@ -10,7 +11,7 @@ import Navbar from './components/Navbar';
 
 const App = () => {
   const [courses, setCourses] = useState([]);
-  // Dummy user for demo; in a real app, use authentication state.
+  // Dummy user info for demonstration; replace with real auth logic in production.
   const dummyUser = {
     id: 1,
     name: "John Doe",
@@ -20,7 +21,6 @@ const App = () => {
   useEffect(() => {
     axios.get("http://localhost:5555/api/courses")
       .then(response => {
-        // Expecting response.data to be either { courses: [...] } or a plain array.
         const data = response.data.courses ? response.data.courses : response.data;
         setCourses(Array.isArray(data) ? data : []);
       })
@@ -28,11 +28,10 @@ const App = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      <Navbar />
+    <div className="min-h-screen bg-gray-100 flex flex-col pt-16">
+      <Navbar user={dummyUser} />
       <div className="flex-grow p-6">
         <Routes>
-          {/* Pass dummyUser and courses as props to appropriate pages */}
           <Route path="/" element={<Home user={dummyUser} courses={courses} />} />
           <Route path="/courses" element={<Courses courses={courses} />} />
           <Route path="/enrollment" element={<Enrollment user={dummyUser} />} />
