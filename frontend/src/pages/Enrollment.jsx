@@ -74,7 +74,7 @@ const Enrollment = ({ user }) => {
 
   // Delete enrollment; assumes each myCourses object contains an enrollment_id field.
   const handleDelete = (enrollmentId) => {
-    axios.delete(`hhttps://student-course-enrollment-system-1.onrender.com/api/enrollments/${enrollmentId}`)
+    axios.delete(`https://student-course-enrollment-system-1.onrender.com/api/enrollments/${enrollmentId}`)
       .then(() => {
         alert("Enrollment deleted.");
         fetchMyCourses();
