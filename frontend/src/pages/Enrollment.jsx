@@ -1,4 +1,3 @@
-// src/pages/Enrollment.jsx
 import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -10,7 +9,7 @@ const Enrollment = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch all courses for the enrollment dropdown.
+  // Fetch all courses 
   useEffect(() => {
     axios.get("https://student-course-enrollment-system-1.onrender.com/api/courses")
       .then((response) => {
@@ -24,7 +23,7 @@ const Enrollment = ({ user }) => {
       });
   }, []);
 
-  // Fetch enrolled courses for the logged-in user.
+  // Fetch enrolled courses 
   const fetchMyCourses = () => {
     axios.get(`https://student-course-enrollment-system-1.onrender.com/api/students/${user.id}/courses`)
       .then((response) => {
@@ -53,11 +52,11 @@ const Enrollment = ({ user }) => {
   const onSubmit = (values, { resetForm, setSubmitting }) => {
     const enrollmentData = {
       student_id: user.id,
-      // Send fallback values for student in case not found:
+      
       student_name: user.name,
       student_email: user.email,
       course_id: values.course_id,
-      note: "" // initially empty; can be updated later via PATCH
+      note: "" 
     };
     axios.post("https://student-course-enrollment-system-1.onrender.com/api/enrollments", enrollmentData)
       .then((response) => {
@@ -72,7 +71,7 @@ const Enrollment = ({ user }) => {
       .finally(() => setSubmitting(false));
   };
 
-  // Delete enrollment; assumes each myCourses object contains an enrollment_id field.
+  // Delete enrollment; 
   const handleDelete = (enrollmentId) => {
     axios.delete(`https://student-course-enrollment-system-1.onrender.com/api/enrollments/${enrollmentId}`)
       .then(() => {
@@ -84,7 +83,7 @@ const Enrollment = ({ user }) => {
       });
   };
 
-  // Update enrollment status and note (for demo, hard-coded update)
+  // Update enrollment status and note 
   const handleUpdate = (enrollmentId, newStatus, newNote) => {
     axios.patch(`https://student-course-enrollment-system-1.onrender.com/api/enrollments/${enrollmentId}`, {
       status: newStatus,

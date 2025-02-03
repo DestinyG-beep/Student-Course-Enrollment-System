@@ -1,4 +1,3 @@
-# routes.py
 from flask import Blueprint, request, jsonify
 from models import db, Student, Course, Enrollment
 
@@ -22,7 +21,7 @@ def get_student_courses(student_id):
         course = Course.query.get(e.course_id)
         if course:
             course_dict = course.to_dict()
-            # Include enrollment-specific info
+            
             course_dict["enrollment_id"] = e.id
             course_dict["status"] = e.status
             course_dict["note"] = e.note

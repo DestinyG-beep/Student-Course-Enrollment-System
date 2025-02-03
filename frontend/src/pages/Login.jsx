@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -16,7 +15,7 @@ const Login = () => {
     axios.post("https://student-course-enrollment-system-1.onrender.com/api/login", values)
       .then(response => {
         alert("Login successful!");
-        // In a real application, store the token and update global state here
+        
         console.log("Login response:", response.data);
         resetForm();
       })

@@ -1,4 +1,3 @@
-// src/pages/Courses.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -13,10 +12,10 @@ const Courses = ({ courses: initialCourses = [] }) => {
   const [department, setDepartment] = useState("");
   const [minSeats, setMinSeats] = useState("");
 
-  // For expanded details view
+  // For expanded details v
   const [expandedCourse, setExpandedCourse] = useState(null);
 
-  // Fetch courses if not provided via props
+  // Fetch courses
   useEffect(() => {
     if (initialCourses.length === 0) {
       axios.get("https://student-course-enrollment-system-1.onrender.com/api/courses")
@@ -44,7 +43,7 @@ const Courses = ({ courses: initialCourses = [] }) => {
 
   return (
     <div className="p-6 pt-20">
-      {/* Fixed Horizontal Search/Filter Bar */}
+      {/* search bar */}
       <div className="fixed top-16 left-0 right-0 bg-white shadow z-40 p-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
           <input

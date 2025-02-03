@@ -1,4 +1,3 @@
-# app.py
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from config import Config
@@ -99,7 +98,7 @@ def login():
     user = User.query.filter_by(username=username).first()
     if not user or not check_password_hash(user.password_hash, password):
         return jsonify({"error": "Invalid credentials"}), 401
-    token = f"token-{user.id}"  # Dummy token for demo
+    token = f"token-{user.id}"  # Dummy token for demo🤪
     return jsonify({
         "message": "Login successful",
         "user": {"id": user.id, "username": user.username, "email": user.email if hasattr(user, "email") else ""},
