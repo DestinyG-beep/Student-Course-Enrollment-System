@@ -145,7 +145,7 @@ def seed_database():
             seats_available=40
         ),
         Course(
-            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510845/civil_rrtexj.jpg",
+            image="https://res.cloudinary.com/dyrayvgch/image/upload/v1738510852/computer_qacd7c.jpg",
             name="Computer Engineering", 
             department="Engineering", 
             credits=4,
