@@ -104,15 +104,7 @@ CourseHub is a full-stack web application that allows students to browse and enr
 6. Add environment variables in Netlify settings.
 7. Deploy and test.
 
-## API Endpoints
-| Method | Endpoint            | Description                |
-|--------|--------------------|----------------------------|
-| POST   | `/register`        | Register a new user        |
-| POST   | `/login`           | Authenticate a user        |
-| GET    | `/courses`         | Get list of courses        |
-| POST   | `/enrollments`     | Enroll in a course         |
-| PATCH  | `/enrollments/:id` | Update enrollment status   |
-| DELETE | `/enrollments/:id` | Remove enrollment          |
+
 
 ## Contributing
 1. Fork the repository.
