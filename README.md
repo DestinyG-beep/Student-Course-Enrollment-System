@@ -1,5 +1,5 @@
 # -Student-Course-Enrollment-System
-frontend "https://student-course-enrollment-system-qkc0c4o63.vercel.app"
+frontend "https://student-course-enrollment-system.vercel.app/"
 backend "https://student-course-enrollment-system-1.onrender.com"
 # CourseHub - Student Course Enrollment System
 
