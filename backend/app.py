@@ -15,6 +15,23 @@ db.init_app(app)
 app.register_blueprint(student_bp)
 app.register_blueprint(course_bp)
 
+#home
+@app.route('/')
+def home():
+    info = {
+        "message": "Welcome to the CourseHub API Backend",
+        "description": "This API allows you to view courses, manage enrollments, and perform user authentication.",
+        "routes": {
+            "/api/courses": "GET: Retrieve list of all courses.",
+            "/api/enrollments": "GET: Retrieve enrollments; POST: Create an enrollment; PATCH: Update an enrollment; DELETE: Delete an enrollment.",
+            "/api/register": "POST: Register a new user.",
+            "/api/login": "POST: Login with credentials to receive a token.",
+            "/api/students": "GET: Retrieve list of students.",
+            "/api/students/<id>/courses": "GET: Retrieve courses a specific student is enrolled in."
+        }
+    }
+    return jsonify(info), 200
+
 # ----- Enrollment Endpoints -----
 @app.route('/api/enrollments', methods=['GET'])
 def get_enrollments():
